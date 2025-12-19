@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Script to extract encoders from S3BIR-DINOv3 model for ALL images in quickdraw_jpg directory.
-Saves encoders as .npy files maintaining the same folder structure.
+Script to extract embeddings from S3BIR-DINOv3 model for all images in a directory.
+Saves embeddings as .npy files maintaining the same folder structure (category folders).
+Processes images from coco_cropped_vanilla_full and saves embeddings to a parallel directory.
 """
 
 import os
@@ -199,12 +200,12 @@ class EncoderExtractor:
         logger.info(f"Average time per image: {elapsed_time/total_processed:.4f} seconds")
 
 def main():
-    parser = argparse.ArgumentParser(description='Extract encoders from S3BIR-DINOv3 model for all quickdraw images')
+    parser = argparse.ArgumentParser(description='Extract encoders from S3BIR-DINOv3 model for all images')
     parser.add_argument('--model_path', type=str, default='s3bir_dinov3.ckpt',
                        help='Path to the trained model checkpoint')
-    parser.add_argument('--input_dir', type=str, default='/data/quickdraw_jpg',
-                       help='Path to quickdraw_jpg directory')
-    parser.add_argument('--output_dir', type=str, default='/data/quickdraw_encoders',
+    parser.add_argument('--input_dir', type=str, default='/home/shared_data/coco_cropped_vanilla_full',
+                       help='Path to input directory with category folders')
+    parser.add_argument('--output_dir', type=str, default='/home/shared_data/coco_cropped_vanilla_full_embeddings',
                        help='Path to save encoder .npy files')
     parser.add_argument('--device', type=str, default='auto',
                        help='Device to use (auto, cpu, cuda)')

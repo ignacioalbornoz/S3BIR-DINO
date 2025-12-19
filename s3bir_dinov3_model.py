@@ -995,7 +995,7 @@ class S3birDinov3(nn.Module):
         self.sk_prompt = nn.Parameter(torch.randn(n_prompts, prompt_dim))
         self.img_prompt = nn.Parameter(torch.randn(n_prompts, prompt_dim))
 
-    def forward(self, data, dtype='sketch'):
+    def forward(self, data, dtype='image'):
         if dtype == 'image':
             feat = self.encoder(data, prompt=self.img_prompt.expand(data.shape[0], -1, -1))
         else:
