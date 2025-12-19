@@ -1,2 +1,4 @@
 efilo_T1_2025-08-04_test
 *.ckpt
+*.log
+extract_remaining_final.log
