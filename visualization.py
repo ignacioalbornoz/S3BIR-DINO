@@ -148,8 +148,8 @@ if __name__ == "__main__":
     model.load_state_dict(state_dict)
     model.eval()
 
-    img = Image.open("/home/data/Datasets/sketchy/photo/airplane/n02691156_10578.jpg").convert("RGB")
-    sketch = Image.open("/home/data/Datasets/sketchy/sketch/airplane/n02691156_10151-1.png").convert("RGB")
+    img = Image.open("/home/shared_data/Datasets/sketchy/photo/airplane/n02691156_10578.jpg").convert("RGB")
+    sketch = Image.open("/home/shared_data/Datasets/sketchy/sketch/airplane/n02691156_10151-1.png").convert("RGB")
 
     transform = make_transform()
     img_tensor = transform(img).unsqueeze(0).to(device)     # [1, 3, 224, 224]

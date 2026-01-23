@@ -184,7 +184,7 @@ class PatchEmbed(nn.Module):
         patch_size: Union[int, Tuple[int, int]] = 16,
         in_chans: int = 3,
         embed_dim: int = 768,
-        norm_layer: Optional[Callable] = None,
+        norm_layer: Callable | None = None,
         flatten_embedding: bool = True,
     ) -> None:
         super().__init__()
@@ -260,15 +260,15 @@ class RopePositionEmbedding(nn.Module):
         embed_dim: int,
         *,
         num_heads: int,
-        base: Optional[float] = 100.0,
-        min_period: Optional[float] = None,
-        max_period: Optional[float] = None,
+        base: float | None = 100.0,
+        min_period: float | None = None,
+        max_period: float | None = None,
         normalize_coords: Literal["min", "max", "separate"] = "separate",
-        shift_coords: Optional[float] = None,
-        jitter_coords: Optional[float] = None,
-        rescale_coords: Optional[float] = None,
-        dtype: Optional[torch.dtype] = None,
-        device: Optional[torch.device] = None,
+        shift_coords: float | None = None,
+        jitter_coords: float | None = None,
+        rescale_coords: float | None = None,
+        dtype: torch.dtype | None = None,
+        device: torch.device | None = None,
     ):
         super().__init__()
         assert embed_dim % (4 * num_heads) == 0
@@ -398,7 +398,7 @@ class SelfAttention(nn.Module):
         self.proj = nn.Linear(dim, dim, bias=proj_bias, device=device)
         self.proj_drop = nn.Dropout(proj_drop)
 
-    def apply_rope(self, q: Tensor, k: Tensor, rope: Union[Tensor, Tuple[Tensor, Tensor]]) -> Tuple[Tensor, Tensor]:
+    def apply_rope(self, q: Tensor, k: Tensor, rope: Tensor | Tuple[Tensor, Tensor]) -> Tuple[Tensor, Tensor]:
         # All operations will use the dtype of rope, the output is cast back to the dtype of q and k
         q_dtype = q.dtype
         k_dtype = k.dtype
@@ -503,7 +503,7 @@ class SelfAttentionBlock(nn.Module):
         self.sample_drop_ratio = drop_path
 
     @staticmethod
-    def _maybe_index_rope(rope: Optional[Tuple[Tensor, Tensor]], indices: Tensor) -> Optional[Tuple[Tensor, Tensor]]:
+    def _maybe_index_rope(rope: tuple[Tensor, Tensor] | None, indices: Tensor) -> tuple[Tensor, Tensor] | None:
         if rope is None:
             return None
 
@@ -675,12 +675,12 @@ class DinoVisionTransformer(nn.Module):
         patch_size: int = 16,
         in_chans: int = 3,
         pos_embed_rope_base: float = 100.0,
-        pos_embed_rope_min_period: Optional[float] = None,
-        pos_embed_rope_max_period: Optional[float] = None,
+        pos_embed_rope_min_period: float | None = None,
+        pos_embed_rope_max_period: float | None = None,
         pos_embed_rope_normalize_coords: Literal["min", "max", "separate"] = "separate",
-        pos_embed_rope_shift_coords: Optional[float] = None,
-        pos_embed_rope_jitter_coords: Optional[float] = None,
-        pos_embed_rope_rescale_coords: Optional[float] = None,
+        pos_embed_rope_shift_coords: float | None = None,
+        pos_embed_rope_jitter_coords: float | None = None,
+        pos_embed_rope_rescale_coords: float | None = None,
         pos_embed_rope_dtype: str = "bf16",
         embed_dim: int = 768,
         depth: int = 12,
@@ -688,7 +688,7 @@ class DinoVisionTransformer(nn.Module):
         ffn_ratio: float = 4.0,
         qkv_bias: bool = True,
         drop_path_rate: float = 0.0,
-        layerscale_init: Optional[float] = None,
+        layerscale_init: float | None = None,
         norm_layer: str = "layernorm",
         ffn_layer: str = "mlp",
         ffn_bias: bool = True,
@@ -697,7 +697,7 @@ class DinoVisionTransformer(nn.Module):
         mask_k_bias: bool = False,
         untie_cls_and_patch_norms: bool = False,
         untie_global_and_local_cls_norm: bool = False,
-        device: Optional[Any] = None,
+        device: Any | None = None,
         **ignored_kwargs,
     ):
         super().__init__()
@@ -882,7 +882,7 @@ class DinoVisionTransformer(nn.Module):
             )
         return output
 
-    def forward_features(self, x: Union[Tensor, List[Tensor]], masks: Optional[Tensor] = None, prompt: Optional[Tensor] = None) -> List[Dict[str, Tensor]]:
+    def forward_features(self, x: Tensor | List[Tensor], masks: Optional[Tensor] = None, prompt: Optional[Tensor] = None) -> List[Dict[str, Tensor]]:
         if isinstance(x, torch.Tensor):
             return self.forward_features_list([x], [masks], [prompt])[0]
         else:
@@ -943,7 +943,7 @@ class DinoVisionTransformer(nn.Module):
         elif return_class_token and return_extra_tokens:
             return tuple(zip(outputs, class_tokens, extra_tokens))
 
-    def forward(self, *args, is_training: bool = False, **kwargs) -> Union[List[Dict[str, Tensor]], Tensor]:
+    def forward(self, *args, is_training: bool = False, **kwargs) -> List[Dict[str, Tensor]] | Tensor:
         ret = self.forward_features(*args, **kwargs)
         if is_training:
             return ret
