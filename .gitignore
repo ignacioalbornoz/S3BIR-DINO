@@ -1,0 +1,8 @@
+efilo_T1_2025-08-04_test
+s3bir_dinov3.ckpt
+*.log
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
