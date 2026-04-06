@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import torch
 import numpy as np
 from PIL import Image
@@ -5,6 +7,9 @@ import torch.nn.functional as F
 import matplotlib.pyplot as plt
 from torchvision.transforms import v2
 from dinov3_model import S3birDinov3
+
+# Salidas junto a este script (p. ej. ~/tesis/S3BIR-DINOv2)
+_VIZ_OUT_DIR = Path(__file__).resolve().parent
 
 def make_transform():
     to_tensor = v2.ToImage()
@@ -43,7 +48,10 @@ def visualize_cls_patch(img, sketch, cls_img, cls_sketch, patch_img, patch_sketc
     plt.colorbar(im1, ax=axes[1, 1], fraction=0.046, pad=0.04)
 
     plt.tight_layout()
-    plt.show()
+    out = _VIZ_OUT_DIR / "visualization_cls_patch.png"
+    fig.savefig(out, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Guardado: {out}")
 
 def infer_grid(n_tokens: int, h_hint: int = None, w_hint: int = None):
     """Infiera grid HxW; si no hay hints, asume cuadrado."""
@@ -136,7 +144,10 @@ def visualize_patch_matching(img, sketch,
     plt.colorbar(im_left, ax=axes[1, 1], fraction=0.046, pad=0.04)
 
     plt.tight_layout()
-    plt.show()
+    out = _VIZ_OUT_DIR / "visualization_patch_matching.png"
+    fig.savefig(out, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Guardado: {out}")
 
 if __name__ == "__main__":
     ckpt_path = "/home/shared_data/s3bir/saved_models/skDinoV3_sketchy.ckpt"
